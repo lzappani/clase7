@@ -1,33 +1,34 @@
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 class Carrito implements Cloneable{
     private Persona persona;
-    private Producto[] listaDeProductos = new Producto[3];
-    private int[] cantidad = new int[3];
+    private List<Producto> listaDeProductos = new ArrayList<Producto>();
+    private List<Integer> cantidad = new ArrayList<Integer>();
     private LocalDate fechaDeCompra;
     private Descuento descuento = new Descuento();
+    private Float precioantesDescuento;
+    private Float precioFinal;
 
-    public Carrito() {}
+
+    public Float getPrecioantesDescuento() {
+        return precioantesDescuento;
+    }
+
+    public Float getPrecioFinal() {
+        return precioFinal;
+    }
+
 
     public Carrito(Persona persona){
         this.persona = persona;
         this.fechaDeCompra = LocalDate.now();
     }
     public void agregarProducto(Producto producto, int cantidad) {
-        int vacio = -1;
-        for (int i = 0; i < 3; i++){
-            if (listaDeProductos[i] == null) {
-                vacio = i;
-                break;
-            }
-        }
-        if(vacio != -1) {
-            this.listaDeProductos[vacio] = producto;
-            this.cantidad[vacio] = cantidad;
-            System.out.printf("Producto agregado al carrito: %s, cantidad: %d%n", producto.getNombre(), cantidad);
-        } else {
-            System.out.println("El carrito esta lleno");
-        }
+        this.listaDeProductos.add(producto);
+        this.cantidad.add(cantidad);
+        System.out.printf("Producto agregado al carrito: %s, cantidad: %d%n", producto.getNombre(), cantidad);
     }
 
     public void setDescuento(float valor, char tipo) {
@@ -47,17 +48,22 @@ class Carrito implements Cloneable{
             default:
                 throw new RuntimeException("Tipo de descuento inexistente.");
         }
+        this.precio();
     }
 
-    public float precio() {
-        float result = 0;
-        for (int i = 0; i < 3; i++){
-            if (listaDeProductos[i] != null) {
-                result += (listaDeProductos[i].getPrecioUnitario() * cantidad[i]);
-                break;
-            }
+    public void precio() {
+        float sumOfPrices = 0;
+        for (int i = 0; i < listaDeProductos.size(); i++){
+            sumOfPrices += (listaDeProductos.get(i).getPrecioUnitario() * cantidad.get(i));
         }
-        return descuento.aplicarDescuento(result);
+        this.precioantesDescuento = sumOfPrices;
+        try{
+            this.precioFinal =  descuento.aplicarDescuento(sumOfPrices);
+        }
+        catch (RuntimeException e) {
+            this.precioFinal = sumOfPrices;
+            System.out.println(e.getMessage());
+        }
     }
 
     @Override

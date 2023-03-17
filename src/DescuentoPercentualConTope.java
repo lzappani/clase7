@@ -8,8 +8,20 @@ public class DescuentoPercentualConTope extends Descuento{
 
     @Override
     public float aplicarDescuento(float valorAntesDescuento) {
+        if (valorAntesDescuento == 0) {
+            RuntimeException valorCero;
+            valorCero= new RuntimeException("No se pudo aplicar el descuento! el precio del carrito antes del descuento es cero");
+            throw valorCero;
+        }
         float descuentoFijo = valorAntesDescuento - this.tope;
         float descuentoPercentual = valorAntesDescuento - valorAntesDescuento * valor;
-        return Math.max(descuentoFijo, descuentoPercentual);
+
+        float result = Math.max(descuentoFijo, descuentoPercentual);
+        if (result < 0) {
+            RuntimeException precioNegativo;
+            precioNegativo= new RuntimeException("No se pudo aplicar el descuento! el precio del carrito con descuento es negativo");
+            throw precioNegativo;
+        }
+        return result;
     }
 }

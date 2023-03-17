@@ -8,7 +8,7 @@ public class Descuento {
         this.valor = valor;
     }
 
-    public float aplicarDescuento(float valorAntesDescuento) {
+    public float aplicarDescuento(float valorAntesDescuento){
         return valorAntesDescuento;
     };
 }
